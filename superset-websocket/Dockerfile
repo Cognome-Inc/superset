@@ -17,6 +17,7 @@ FROM node:16-alpine AS build
 WORKDIR /home/superset-websocket
 
 COPY . ./
+RUN npm set strict-ssl false
 
 RUN npm ci && \
   npm run build
@@ -30,6 +31,7 @@ WORKDIR /home/superset-websocket
 COPY --from=build /home/superset-websocket/dist ./dist
 COPY package*.json ./
 
+RUN npm set strict-ssl false
 # Only install production dependencies
 RUN npm ci --omit=dev
 

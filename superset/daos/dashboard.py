@@ -41,6 +41,7 @@ from superset.models.slice import Slice
 from superset.utils import json
 from superset.utils.core import get_user_id
 from superset.utils.dashboard_filter_scopes_converter import copy_filter_scopes
+from sqlalchemy import desc
 
 logger = logging.getLogger(__name__)
 
@@ -158,6 +159,19 @@ class DashboardDAO(BaseDAO[Dashboard]):
         )
         # drop microseconds in datetime to match with last_modified header
         return max(dashboard_changed_on, datasources_changed_on).replace(microsecond=0)
+
+    @classmethod
+    def find_all_by_update_date(cls) -> list[Dashboard]:
+        """
+        Get all that fit the `base_filter`
+        """
+        query = db.session.query(cls.model_cls).filter(Dashboard.published.is_(True)).order_by(desc(Dashboard.changed_on)).limit(5)
+        if cls.base_filter:
+            data_model = SQLAInterface(cls.model_cls, db.session)
+            query = cls.base_filter(  # pylint: disable=not-callable
+                cls.id_column_name, data_model
+            ).apply(query, None)
+        return query.all()
 
     @staticmethod
     def validate_slug_uniqueness(slug: str) -> bool:
