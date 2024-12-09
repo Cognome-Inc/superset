@@ -74,6 +74,7 @@ from superset.utils.filters import get_dataset_access_filters
 from superset.views.error_handling import json_error_response
 
 from .utils import bootstrap_user_data
+from superset.initialization import SupersetAppInitializer
 
 FRONTEND_CONF_KEYS = (
     "SUPERSET_WEBSERVER_TIMEOUT",
@@ -260,6 +261,8 @@ def menu_data(user: User) -> dict[str, Any]:
     if callable(brand_text := appbuilder.app.config["LOGO_RIGHT_TEXT"]):
         brand_text = brand_text()
 
+    appbuilder.menu.menu = []
+    SupersetAppInitializer.setup_top_menu(None, appbuilder)
     return {
         "menu": appbuilder.menu.get_data(),
         "brand": {

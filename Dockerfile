@@ -37,7 +37,9 @@ RUN --mount=type=bind,source=./docker,target=/docker \
 
 # Define environment variables for frontend build
 ENV BUILD_CMD=${NPM_BUILD_CMD} \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+PUPPETEER_SKIP_DOWNLOAD=true \
+NODE_TLS_REJECT_UNAUTHORIZED=0
 
 # Run the frontend memory monitoring script
 RUN --mount=type=bind,source=./docker,target=/docker \
@@ -53,7 +55,8 @@ RUN mkdir -p /app/superset/static/assets \
 RUN --mount=type=bind,source=./superset-frontend/package.json,target=./package.json \
     --mount=type=bind,source=./superset-frontend/package-lock.json,target=./package-lock.json \
     if [ "$DEV_MODE" = "false" ]; then \
-        npm ci; \
+    npm config set strict-ssl false; \
+    npm ci; \
     else \
         echo "Skipping 'npm ci' in dev mode"; \
     fi

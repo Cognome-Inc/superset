@@ -114,6 +114,100 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
 
         celery_app.Task = AppContextTask
 
+    def setup_top_menu(self, appbuilder):
+        from superset.daos.dashboard import DashboardDAO
+        from superset.views.dashboard.views import (
+            DashboardModelView,
+        )
+        from superset.views.chart.views import SliceModelView
+        from superset.views.database.views import DatabaseView
+        from superset.views.dynamic_plugins import DynamicPluginsView
+        from superset.views.css_templates import (
+            CssTemplateModelView,
+        )
+        appbuilder.add_link(
+            "Home",
+            label=__("Home"),
+            href="/superset/welcome/",
+            cond=lambda: bool(appbuilder.app.config["LOGO_TARGET_PATH"]),
+        )
+
+        appbuilder.add_view(
+            DatabaseView,
+            "Databases",
+            label=__("Database Connections"),
+            icon="fa-database",
+            category="Data",
+            category_label=__("Data"),
+        )
+        appbuilder.add_view(
+            DashboardModelView,
+            "Dashboards",
+            label=__("Dashboards"),
+            icon="fa-dashboard",
+            category="",
+            category_icon="",
+        )
+        base_filter_orig = DashboardDAO.base_filter
+        DashboardDAO.base_filter = None
+        for dashboard in DashboardDAO.find_all_by_update_date():
+            appbuilder.add_link(
+                "Test Dashboard Submenu",
+                label=__(dashboard.dashboard_title),
+                href=dashboard.url,
+                icon="fa-flask",
+                category="Dashboards",
+                category_label=__("Dashboards"),
+            )
+        DashboardDAO.base_filter = base_filter_orig
+        appbuilder.add_separator("Dashboards")
+        appbuilder.add_link(
+            "Test Dashboard Submenu",
+            label=__("Show All"),
+            href="/dashboard/list",
+            icon="fa-flask",
+            category="Dashboards",
+            category_label=__("Dashboards"),
+        )
+        appbuilder.add_view(
+            SliceModelView,
+            "Charts",
+            label=__("Charts"),
+            icon="fa-bar-chart",
+            category="",
+            category_icon="",
+        )
+
+        appbuilder.add_link(
+            "Datasets",
+            label=__("Datasets"),
+            href="/tablemodelview/list/",
+            icon="fa-table",
+            category="",
+            category_icon="",
+        )
+
+        appbuilder.add_view(
+            DynamicPluginsView,
+            "Plugins",
+            label=__("Plugins"),
+            category="Manage",
+            category_label=__("Manage"),
+            icon="fa-puzzle-piece",
+            menu_cond=lambda: feature_flag_manager.is_feature_enabled(
+                "DYNAMIC_PLUGINS"
+            ),
+        )
+        appbuilder.add_view(
+            CssTemplateModelView,
+            "CSS Templates",
+            label=__("CSS Templates"),
+            icon="fa-css3",
+            category="Manage",
+            category_label=__("Manage"),
+            category_icon="",
+        )
+
     def init_views(self) -> None:
         #
         # We're doing local imports, as several of them import
@@ -230,68 +324,8 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         #
         # Setup regular views
         #
-        appbuilder.add_link(
-            "Home",
-            label=__("Home"),
-            href="/superset/welcome/",
-            cond=lambda: bool(appbuilder.app.config["LOGO_TARGET_PATH"]),
-        )
-
-        appbuilder.add_view(
-            DatabaseView,
-            "Databases",
-            label=__("Database Connections"),
-            icon="fa-database",
-            category="Data",
-            category_label=__("Data"),
-        )
-        appbuilder.add_view(
-            DashboardModelView,
-            "Dashboards",
-            label=__("Dashboards"),
-            icon="fa-dashboard",
-            category="",
-            category_icon="",
-        )
-        appbuilder.add_view(
-            SliceModelView,
-            "Charts",
-            label=__("Charts"),
-            icon="fa-bar-chart",
-            category="",
-            category_icon="",
-        )
-
-        appbuilder.add_link(
-            "Datasets",
-            label=__("Datasets"),
-            href="/tablemodelview/list/",
-            icon="fa-table",
-            category="",
-            category_icon="",
-        )
-
-        appbuilder.add_view(
-            DynamicPluginsView,
-            "Plugins",
-            label=__("Plugins"),
-            category="Manage",
-            category_label=__("Manage"),
-            icon="fa-puzzle-piece",
-            menu_cond=lambda: feature_flag_manager.is_feature_enabled(
-                "DYNAMIC_PLUGINS"
-            ),
-        )
-        appbuilder.add_view(
-            CssTemplateModelView,
-            "CSS Templates",
-            label=__("CSS Templates"),
-            icon="fa-css3",
-            category="Manage",
-            category_label=__("Manage"),
-            category_icon="",
-        )
-
+        self.setup_top_menu(appbuilder)
+        
         #
         # Setup views with no menu
         #
