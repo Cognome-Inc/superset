@@ -260,9 +260,7 @@ def menu_data(user: User) -> dict[str, Any]:
 
     if callable(brand_text := appbuilder.app.config["LOGO_RIGHT_TEXT"]):
         brand_text = brand_text()
-
-    appbuilder.menu.menu = []
-    SupersetAppInitializer.setup_top_menu(None, appbuilder)
+        
     return {
         "menu": appbuilder.menu.get_data(),
         "brand": {

@@ -42,17 +42,8 @@ EXAMPLES_PORT = os.getenv("EXAMPLES_PORT")
 EXAMPLES_DB = os.getenv("EXAMPLES_DB")
 
 # The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = (
-    f"{DATABASE_DIALECT}://"
-    f"{DATABASE_USER}:{DATABASE_PASSWORD}@"
-    f"{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_DB}"
-)
-
-SQLALCHEMY_EXAMPLES_URI = (
-    f"{DATABASE_DIALECT}://"
-    f"{EXAMPLES_USER}:{EXAMPLES_PASSWORD}@"
-    f"{EXAMPLES_HOST}:{EXAMPLES_PORT}/{EXAMPLES_DB}"
-)
+SQLALCHEMY_DATABASE_URI = os.getenv("SUPERSET__SQLALCHEMY_DATABASE_URI")
+SQLALCHEMY_EXAMPLES_URI = os.getenv("SQLALCHEMY_EXAMPLES_URI")
 
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
@@ -117,3 +108,31 @@ try:
     )
 except ImportError:
     logger.info("Using default Docker config...")
+
+
+
+from flask import redirect, g, request
+
+from flask_appbuilder import expose, IndexView
+
+from superset.extensions import (
+    appbuilder,
+)
+
+from superset.utils.core import (
+    get_user_id,
+)
+
+from superset.superset_typing import FlaskResponse
+
+class SupersetIndexView(IndexView):
+    @expose("/")
+    def index(self) -> FlaskResponse:
+        if not g.user or not get_user_id():
+            # Do steps for anonymous user e.g.
+            return redirect("/login")
+        # Do steps for authenticated user e.g.
+        return redirect("/dashboard/list")
+
+
+FAB_INDEX_VIEW = f"{SupersetIndexView.__module__}.{SupersetIndexView.__name__}"
