@@ -114,32 +114,10 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
 
         celery_app.Task = AppContextTask
 
-    def setup_top_menu(self, appbuilder):
+    def add_dashboards_menu(self):
         from superset.daos.dashboard import DashboardDAO
-        from superset.views.dashboard.views import (
-            DashboardModelView,
-        )
-        from superset.views.chart.views import SliceModelView
-        from superset.views.database.views import DatabaseView
-        from superset.views.dynamic_plugins import DynamicPluginsView
-        from superset.views.css_templates import (
-            CssTemplateModelView,
-        )
-        appbuilder.add_link(
-            "Home",
-            label=__("Home"),
-            href="/superset/welcome/",
-            cond=lambda: bool(appbuilder.app.config["LOGO_TARGET_PATH"]),
-        )
-
-        appbuilder.add_view(
-            DatabaseView,
-            "Databases",
-            label=__("Database Connections"),
-            icon="fa-database",
-            category="Data",
-            category_label=__("Data"),
-        )
+        from superset.views.dashboard.views import DashboardModelView
+        
         appbuilder.add_view(
             DashboardModelView,
             "Dashboards",
@@ -169,44 +147,7 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             category="Dashboards",
             category_label=__("Dashboards"),
         )
-        appbuilder.add_view(
-            SliceModelView,
-            "Charts",
-            label=__("Charts"),
-            icon="fa-bar-chart",
-            category="",
-            category_icon="",
-        )
 
-        appbuilder.add_link(
-            "Datasets",
-            label=__("Datasets"),
-            href="/tablemodelview/list/",
-            icon="fa-table",
-            category="",
-            category_icon="",
-        )
-
-        appbuilder.add_view(
-            DynamicPluginsView,
-            "Plugins",
-            label=__("Plugins"),
-            category="Manage",
-            category_label=__("Manage"),
-            icon="fa-puzzle-piece",
-            menu_cond=lambda: feature_flag_manager.is_feature_enabled(
-                "DYNAMIC_PLUGINS"
-            ),
-        )
-        appbuilder.add_view(
-            CssTemplateModelView,
-            "CSS Templates",
-            label=__("CSS Templates"),
-            icon="fa-css3",
-            category="Manage",
-            category_label=__("Manage"),
-            category_icon="",
-        )
 
     def init_views(self) -> None:
         #
@@ -324,7 +265,43 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         #
         # Setup regular views
         #
-        self.setup_top_menu(appbuilder)
+        appbuilder.add_link(
+            "Home",
+            label=__("Home"),
+            href="/superset/welcome/",
+            cond=lambda: bool(appbuilder.app.config["LOGO_TARGET_PATH"]),
+        )
+
+        appbuilder.add_view(
+            DatabaseView,
+            "Databases",
+            label=__("Database Connections"),
+            icon="fa-database",
+            category="Data",
+            category_label=__("Data"),
+        )
+        #
+        # Add Dashboards menu
+        #
+        self.add_dashboards_menu()
+
+        appbuilder.add_view(
+            SliceModelView,
+            "Charts",
+            label=__("Charts"),
+            icon="fa-bar-chart",
+            category="",
+            category_icon="",
+        )
+
+        appbuilder.add_link(
+            "Datasets",
+            label=__("Datasets"),
+            href="/tablemodelview/list/",
+            icon="fa-table",
+            category="",
+            category_icon="",
+        )
         
         #
         # Setup views with no menu
@@ -356,41 +333,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         #
         # Add links
         #
-        appbuilder.add_link(
-            "SQL Editor",
-            label=__("SQL Lab"),
-            href="/sqllab/",
-            category_icon="fa-flask",
-            icon="fa-flask",
-            category="SQL Lab",
-            category_label=__("SQL"),
-        )
-        appbuilder.add_link(
-            "Saved Queries",
-            label=__("Saved Queries"),
-            href="/savedqueryview/list/",
-            icon="fa-save",
-            category="SQL Lab",
-            category_label=__("SQL"),
-        )
-        appbuilder.add_link(
-            "Query Search",
-            label=__("Query History"),
-            href="/sqllab/history/",
-            icon="fa-search",
-            category_icon="fa-flask",
-            category="SQL Lab",
-            category_label=__("SQL Lab"),
-        )
-        appbuilder.add_view(
-            TagModelView,
-            "Tags",
-            label=__("Tags"),
-            icon="",
-            category_icon="",
-            category="Manage",
-            menu_cond=lambda: feature_flag_manager.is_feature_enabled("TAGGING_SYSTEM"),
-        )
         appbuilder.add_api(LogRestApi)
         appbuilder.add_view(
             LogModelView,

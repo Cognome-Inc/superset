@@ -165,7 +165,7 @@ class DashboardDAO(BaseDAO[Dashboard]):
         """
         Get all that fit the `base_filter`
         """
-        query = db.session.query(cls.model_cls).filter(Dashboard.published.is_(True)).order_by(desc(Dashboard.changed_on)).limit(5)
+        query = db.session.query(cls.model_cls).filter(Dashboard.published == True).order_by(desc(Dashboard.changed_on)).limit(5)
         if cls.base_filter:
             data_model = SQLAInterface(cls.model_cls, db.session)
             query = cls.base_filter(  # pylint: disable=not-callable
