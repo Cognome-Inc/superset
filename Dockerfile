@@ -37,7 +37,8 @@ RUN --mount=type=bind,source=./docker,target=/docker \
 
 # Define environment variables for frontend build
 ENV BUILD_CMD=${NPM_BUILD_CMD} \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    NODE_TLS_REJECT_UNAUTHORIZED=0
 
 # Run the frontend memory monitoring script
 RUN --mount=type=bind,source=./docker,target=/docker \
@@ -53,7 +54,8 @@ RUN mkdir -p /app/superset/static/assets \
 RUN --mount=type=bind,source=./superset-frontend/package.json,target=./package.json \
     --mount=type=bind,source=./superset-frontend/package-lock.json,target=./package-lock.json \
     if [ "$DEV_MODE" = "false" ]; then \
-        npm ci; \
+    npm config set strict-ssl false; \
+    npm ci; \
     else \
         echo "Skipping 'npm ci' in dev mode"; \
     fi
@@ -216,6 +218,31 @@ RUN --mount=type=bind,source=./docker,target=/docker \
     else \
         echo "Skipping Firefox installation in dev mode"; \
     fi
+
+# Install Oracle client
+# Set environment variables
+ENV ORACLE_HOME=/opt/oracle/instantclient_23_6
+ENV LD_LIBRARY_PATH=$ORACLE_HOME:$LD_LIBRARY_PATH
+ENV PATH=$ORACLE_HOME:$PATH
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    wget \
+    unzip \
+    libaio1 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install oracledb --upgrade
+RUN pip install cx_oracle --upgrade
+
+COPY instantclient-basic-linux.x64-23.6.0.24.10.zip /tmp/instantclient.zip
+RUN unzip /tmp/instantclient.zip -d /opt/oracle && \
+rm /tmp/instantclient.zip
+RUN ls -l /opt/oracle
+RUN chmod -R 755 /opt/oracle/instantclient_23_6
+RUN echo "/opt/oracle/instantclient_23_6" > /etc/ld.so.conf.d/oracle-instantclient.conf && \
+    ldconfig
 
 # Install MySQL client dependencies
 RUN --mount=type=bind,source=./docker,target=/docker \

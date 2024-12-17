@@ -24,6 +24,8 @@ from superset.utils.decorators import transaction
 
 logger = logging.getLogger(__name__)
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 def load_examples_run(
     load_test_data: bool = False,

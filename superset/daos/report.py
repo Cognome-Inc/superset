@@ -208,7 +208,7 @@ class ReportScheduleDAO(BaseDAO[ReportSchedule]):
         """
         return (
             db.session.query(ReportSchedule)
-            .filter(ReportSchedule.active.is_(True))
+            .filter(ReportSchedule.active == True)
             .all()
         )
 

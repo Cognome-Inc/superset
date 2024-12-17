@@ -114,6 +114,41 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
 
         celery_app.Task = AppContextTask
 
+    def add_dashboards_menu(self):
+        from superset.daos.dashboard import DashboardDAO
+        from superset.views.dashboard.views import DashboardModelView
+        
+        appbuilder.add_view(
+            DashboardModelView,
+            "Dashboards",
+            label=__("Dashboards"),
+            icon="fa-dashboard",
+            category="",
+            category_icon="",
+        )
+        base_filter_orig = DashboardDAO.base_filter
+        DashboardDAO.base_filter = None
+        for dashboard in DashboardDAO.find_all_by_update_date():
+            appbuilder.add_link(
+                "Test Dashboard Submenu",
+                label=__(dashboard.dashboard_title),
+                href=dashboard.url,
+                icon="fa-flask",
+                category="Dashboards",
+                category_label=__("Dashboards"),
+            )
+        DashboardDAO.base_filter = base_filter_orig
+        appbuilder.add_separator("Dashboards")
+        appbuilder.add_link(
+            "Test Dashboard Submenu",
+            label=__("Show All"),
+            href="/dashboard/list",
+            icon="fa-flask",
+            category="Dashboards",
+            category_label=__("Dashboards"),
+        )
+
+
     def init_views(self) -> None:
         #
         # We're doing local imports, as several of them import
@@ -245,14 +280,11 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             category="Data",
             category_label=__("Data"),
         )
-        appbuilder.add_view(
-            DashboardModelView,
-            "Dashboards",
-            label=__("Dashboards"),
-            icon="fa-dashboard",
-            category="",
-            category_icon="",
-        )
+        #
+        # Add Dashboards menu
+        #
+        self.add_dashboards_menu()
+
         appbuilder.add_view(
             SliceModelView,
             "Charts",
@@ -270,28 +302,7 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             category="",
             category_icon="",
         )
-
-        appbuilder.add_view(
-            DynamicPluginsView,
-            "Plugins",
-            label=__("Plugins"),
-            category="Manage",
-            category_label=__("Manage"),
-            icon="fa-puzzle-piece",
-            menu_cond=lambda: feature_flag_manager.is_feature_enabled(
-                "DYNAMIC_PLUGINS"
-            ),
-        )
-        appbuilder.add_view(
-            CssTemplateModelView,
-            "CSS Templates",
-            label=__("CSS Templates"),
-            icon="fa-css3",
-            category="Manage",
-            category_label=__("Manage"),
-            category_icon="",
-        )
-
+        
         #
         # Setup views with no menu
         #
@@ -322,41 +333,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         #
         # Add links
         #
-        appbuilder.add_link(
-            "SQL Editor",
-            label=__("SQL Lab"),
-            href="/sqllab/",
-            category_icon="fa-flask",
-            icon="fa-flask",
-            category="SQL Lab",
-            category_label=__("SQL"),
-        )
-        appbuilder.add_link(
-            "Saved Queries",
-            label=__("Saved Queries"),
-            href="/savedqueryview/list/",
-            icon="fa-save",
-            category="SQL Lab",
-            category_label=__("SQL"),
-        )
-        appbuilder.add_link(
-            "Query Search",
-            label=__("Query History"),
-            href="/sqllab/history/",
-            icon="fa-search",
-            category_icon="fa-flask",
-            category="SQL Lab",
-            category_label=__("SQL Lab"),
-        )
-        appbuilder.add_view(
-            TagModelView,
-            "Tags",
-            label=__("Tags"),
-            icon="",
-            category_icon="",
-            category="Manage",
-            menu_cond=lambda: feature_flag_manager.is_feature_enabled("TAGGING_SYSTEM"),
-        )
         appbuilder.add_api(LogRestApi)
         appbuilder.add_view(
             LogModelView,

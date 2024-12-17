@@ -129,7 +129,7 @@ class DashboardAccessFilter(BaseFilter):  # pylint: disable=too-few-public-metho
             .join(Database, SqlaTable.database_id == Database.id)
             .filter(
                 and_(
-                    Dashboard.published.is_(True),
+                    Dashboard.published == True,
                     *is_rbac_disabled_filter,
                     get_dataset_access_filters(
                         Slice,
@@ -152,7 +152,7 @@ class DashboardAccessFilter(BaseFilter):  # pylint: disable=too-few-public-metho
                 .join(Dashboard.roles)
                 .filter(
                     and_(
-                        Dashboard.published.is_(True),
+                        Dashboard.published == True,
                         dashboard_has_roles,
                         Role.id.in_([x.id for x in security_manager.get_user_roles()]),
                     ),
