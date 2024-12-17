@@ -137,6 +137,8 @@ RUN --mount=type=bind,source=./docker,target=/docker \
 
 # Copy the compiled frontend assets from the node image
 COPY --chown=superset:superset --from=superset-node /app/superset/static/assets superset/static/assets
+#copying custom styles to docker image.
+COPY --chown=superset:superset ./superset/static/assets/cognome_custom_styles.css ./superset/static/assets/cognome_custom_styles.css
 
 # Copy the main Superset source code
 COPY --chown=superset:superset superset superset
