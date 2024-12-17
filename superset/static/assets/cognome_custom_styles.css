@@ -1,0 +1,143 @@
+
+.ant-btn {
+    border: none;
+    border-radius: 20px !important;
+    background-color: #320E3B !important;
+    padding: 10px 15px 10px 15px !important;
+    color: #FFFFFF !important;
+}
+
+.ant-btn:hover{
+    background-color: #6C1F80 !important;
+}
+
+button.ant-btn.superset-button.superset-button-tertiary {
+    border: none;
+}
+
+ul.ant-menu.ant-menu-light.main-nav {
+    background-color: #320E3B !important;
+    color: #FFFFFF;
+}
+
+.ant-menu .ant-menu-item-selected a {
+    color: white !important;
+}
+
+.ant-menu .ant-menu-item-selected:hover {
+    background-color: darkviolet !important;
+}
+ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-horizontal {
+    background-color: #320E3B !important;
+    color: white !important;
+}
+.ant-menu-item.ant-menu-item-only-child a {
+    color: #FFFFFF;
+}
+
+.ant-menu-item.ant-menu-item-only-child.ant-menu-item-selected a {
+    color: #FFFFFF;
+}
+li.ant-menu-submenu.ant-menu-submenu-horizontal a {
+    color: #FFFFFF;
+}
+ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-horizontal {
+    background-color: #320E3B;
+    color: #FFFFFF;
+}
+
+.ant-menu-item.ant-menu-item-only-child:hover {
+}
+li.ant-menu-item.ant-menu-item-only-child a {
+    color: white;
+}
+/*development styling*/
+.ant-col.ant-col-xs-24.ant-col-md-8 {
+    background-color: #320E3B;
+}
+/*Home Styling*/
+.ant-row.menu > .header {
+    color: white;
+}
+div.ant-row.menu {
+    background-color: #6C1F80;
+}
+
+ul.ant-menu.ant-menu-light.main-nav.ant-menu-root.ant-menu-horizontal {
+    background-color: #320E3B;
+    color: #FFFFFF;
+}
+
+div.ant-collapse-item {
+  background-color: #E9DBED !important;
+  color: #6C1F80 !important;
+}
+
+
+ul#item_1\$Menu {
+    background-color: #320E3B;
+    color: #FFFFFF;
+}
+ul#item_1\$Menu > *{
+    color: #FFFFFF;
+}
+ul#item_0\$Menu {
+    color: white;
+    background-color: #320E3B;
+}
+
+ul#\33 \$Menu {
+        background-color: #320E3B;
+        color: #FFFFFF;
+}
+
+/*for SQL and Settings sections of header nav*/
+.ant-menu-submenu-title {
+    color: white;
+}
+
+.ant-collapse-item.ant-collapse-item-active > .ant-collapse-content > .ant-collapse-content-box > * > div[role="navigation"].ant-row.menu {
+    background-color: #320E3B;
+}
+.ant-collapse-item.ant-collapse-item-active > .ant-collapse-content > .ant-collapse-content-box > *  > * > div[role="navigation"].ant-row.menu {
+    background-color: #320E3B;
+}
+
+.ant-menu-submenu.ant-menu-submenu-horizontal > .ant-menu-submenu-title > span:last-of-type {
+    color: white;
+}
+
+ul#sub2_Data\$Menu {
+    background-color: #320E3B;
+    color: #FFFFFF;
+}
+.LinesEllipsis {
+    color: purple;
+}
+
+
+.ant-menu-item-group-title {
+    color: white !important;
+}
+
+
+.ant-menu-item.ant-menu-item-only-child .no-router a  {
+    border: none;
+    border-radius: 20px !important;
+    background-color: #320E3B !important;
+    padding: 10px 15px 10px 15px !important;
+    color: #FFFFFF !important;
+}
+
+.ant-menu-item.ant-menu-item-only-child .no-router a:hover{
+    color: white;
+    background-color: #6C1F80 !important;
+}
+/*adjusting RECENTs content-box header's right side*/
+.ant-collapse-content-box > * > * > .ant-row.menu {
+    transform: translateX(5px);
+}
+/*adjusting all other content-box's header's right side*/
+.ant-collapse-content-box > * > .ant-row.menu {
+    transform: translateX(10px);
+}

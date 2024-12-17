@@ -25,6 +25,15 @@ import os
 
 from celery.schedules import crontab
 from flask_caching.backends.filesystemcache import FileSystemCache
+from flask_appbuilder import AppBuilder
+from flask_appbuilder import expose
+from flask import Markup
+
+import sys
+import oracledb
+oracledb.version = "8.3.0"
+sys.modules["cx_Oracle"] = oracledb
+import cx_Oracle
 
 logger = logging.getLogger()
 
@@ -117,3 +126,38 @@ try:
     )
 except ImportError:
     logger.info("Using default Docker config...")
+
+#SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://superset:superset@db:5432/superset?sslmode=disable"
+
+
+THEME_OVERRIDES = {
+    #ENSURE SINGLE QUOTES for values of the properties
+    "colors": {
+        "primary": {
+            "base": '#320E3B',
+        },
+        "tertiary":{
+            "base":  '#6C1F80',
+        },
+        "grayscale": {
+            "base": '#6C1F80',
+        }
+    },
+    "borderRadius": 20,  # Override border radius for UI elements
+    "spacing": {
+        "padding": "10px",  # Adjust default padding
+    },
+}
+
+
+
+EXTRA_CATEGORICAL_COLOR_SCHEMES = [
+    {
+        "id": "cognomeColorScheme",           # A unique identifier for the color scheme
+        "description": "Cognome Color Scheme",  # Optional: Description for the color scheme
+        "label": "Cognome Color Scheme", # Label that appears in the UI
+        "colors": [                         # List of colors in HEX format
+            "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF" #FOR TEST, not real values
+        ],
+    }
+]

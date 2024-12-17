@@ -59,6 +59,10 @@
         href="{{ assets_prefix }}/static/appbuilder/css/select2/select2.min.css"
         as="style"
       />
+      <link rel="preload"
+            type="text/css" href="{{ url_for('static', filename='assets/cognome_custom_styles.css') }}"
+      as="style"
+      />
 
       {{ css_bundle("theme") }} {% if entry %} {{ css_bundle(entry) }} {% endif %}
       {% endblock %} {{ js_bundle("theme") }}
