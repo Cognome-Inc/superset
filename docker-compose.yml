@@ -25,6 +25,7 @@ x-superset-user: &superset-user root
 x-superset-depends-on: &superset-depends-on
   - db
   - redis
+  - superset-checks
 x-superset-volumes: &superset-volumes
   # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
   - ./docker:/app/docker
@@ -32,6 +33,8 @@ x-superset-volumes: &superset-volumes
   - ./superset-frontend:/app/superset-frontend
   - superset_home:/app/superset_home
   - ./tests:/app/tests
+  - ./superset/static/assets/cognome_custom_styles.css:/app/superset/static/assets/cognome_custom_styles.css
+
 
 x-common-build: &common-build
   context: .

@@ -28,6 +28,7 @@ x-superset-volumes:
   &superset-volumes # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
   - ./docker:/app/docker
   - superset_home:/app/superset_home
+  - ./superset/static/assets/cognome_custom_styles.css:/app/superset/static/assets/cognome_custom_styles.css
 
 x-common-build: &common-build
   context: .
@@ -57,6 +58,8 @@ services:
       - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
 
   superset:
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
     env_file:
       - path: docker/.env # default
         required: true
@@ -74,6 +77,9 @@ services:
     volumes: *superset-volumes
 
   superset-init:
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - PYTHONHTTPSVERIFY=0
     container_name: superset_init
     build:
       <<: *common-build
@@ -90,6 +96,8 @@ services:
       disable: true
 
   superset-worker:
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
     build:
       <<: *common-build
     container_name: superset_worker
@@ -111,6 +119,8 @@ services:
         ]
 
   superset-worker-beat:
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
     build:
       <<: *common-build
     container_name: superset_worker_beat

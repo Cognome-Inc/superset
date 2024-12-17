@@ -42,6 +42,7 @@ docs/
 install/
 superset-frontend/cypress-base/
 superset-frontend/coverage/
-superset/static/assets/
+superset/static/assets/*
+!superset/static/assets/cognome_custom_styles.css
 superset-websocket/dist/
 venv
