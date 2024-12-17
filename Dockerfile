@@ -20,25 +20,39 @@
 ######################################################################
 ARG PY_VER=3.10-slim-bookworm
 
-# If BUILDPLATFORM is null, set it to 'amd64' (or leave as is otherwise).
+# if BUILDPLATFORM is null, set it to 'amd64' (or leave as is otherwise).
 ARG BUILDPLATFORM=${BUILDPLATFORM:-amd64}
 FROM --platform=${BUILDPLATFORM} node:20-bullseye-slim AS superset-node
 
-# Arguments for build configuration
 ARG NPM_BUILD_CMD="build"
-ARG BUILD_TRANSLATIONS="false" # Include translations in the final build
-ARG DEV_MODE="false"           # Skip frontend build in dev mode
-ARG INCLUDE_CHROMIUM="true"    # Include headless Chromium for alerts & reports
-ARG INCLUDE_FIREFOX="false"    # Include headless Firefox if enabled
+
+# Include translations in the final build. The default supports en only to
+# reduce complexity and weight for those only using en
+ARG BUILD_TRANSLATIONS="false"
 
 # Install system dependencies required for node-gyp
 RUN --mount=type=bind,source=./docker,target=/docker \
     /docker/apt-install.sh build-essential python3 zstd
 
-# Define environment variables for frontend build
+ARG DEV_MODE="false"
+
+# Include headless browsers? Allows for alerts, reports & thumbnails, but bloats the images
+ARG INCLUDE_CHROMIUM="true"
+ARG INCLUDE_FIREFOX="false"
+
+ARG DEPLOYMENT_MODE="local"
+
+# Somehow we need python3 + build-essential on this side of the house to install node-gyp
+RUN apt-get update -qq \
+    && apt-get install \
+        -yqq --no-install-recommends \
+        build-essential \
+        python3 \
+        zstd
+
 ENV BUILD_CMD=${NPM_BUILD_CMD} \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    NODE_TLS_REJECT_UNAUTHORIZED=0
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+# NPM ci first, as to NOT invalidate previous steps except for when package.json changes
 
 # Run the frontend memory monitoring script
 RUN --mount=type=bind,source=./docker,target=/docker \
@@ -46,16 +60,26 @@ RUN --mount=type=bind,source=./docker,target=/docker \
 
 WORKDIR /app/superset-frontend
 
+
 # Create necessary folders to avoid errors in subsequent steps
 RUN mkdir -p /app/superset/static/assets \
-             /app/superset/translations
+             /app/superset/translations \
 
-# Mount package files and install dependencies if not in dev mode
-RUN --mount=type=bind,source=./superset-frontend/package.json,target=./package.json \
-    --mount=type=bind,source=./superset-frontend/package-lock.json,target=./package-lock.json \
-    if [ "$DEV_MODE" = "false" ]; then \
-    npm config set strict-ssl false; \
-    npm ci; \
+# Creating empty folders to avoid errors when running COPY later on
+RUN if [ "$DEPLOYMENT_MODE" = "local" ]; then \
+  npm config set ca ""; \
+  npm config set strict-ssl false -g; \
+  npm config set strict-ssl false; \
+fi
+
+
+RUN --mount=type=bind,target=./package.json,src=./superset-frontend/package.json \
+    --mount=type=bind,target=./package-lock.json,src=./superset-frontend/package-lock.json \
+    if [ "$DEV_MODE" = "false" ] && [ "$DEPLOYMENT_MODE" = "local" ]; then \
+       npm config set ca ""; \
+        npm config set strict-ssl false -g; \
+        npm config set strict-ssl false; \
+        npm ci; \
     else \
         echo "Skipping 'npm ci' in dev mode"; \
     fi
@@ -162,17 +186,13 @@ RUN if [ "$BUILD_TRANSLATIONS" = "true" ]; then \
     && rm -rf superset/translations/messages.pot \
               superset/translations/*/LC_MESSAGES/*.po
 
-# Add server run script
 COPY --chmod=755 ./docker/run-server.sh /usr/bin/
-
-# Set user and healthcheck
 USER superset
+
 HEALTHCHECK CMD curl -f "http://localhost:${SUPERSET_PORT}/health"
 
-# Expose port and set CMD
 EXPOSE ${SUPERSET_PORT}
 CMD ["/usr/bin/run-server.sh"]
-
 
 ######################################################################
 # Dev image...
@@ -191,26 +211,26 @@ RUN --mount=type=bind,source=./docker,target=/docker \
         libasound2 \
         libxtst6 \
         git \
-        pkg-config
+        pkg-config \
+        && rm -rf /var/lib/apt/lists/*
 
-# Install Playwright and its dependencies
 RUN --mount=type=cache,target=/root/.cache/pip \
     uv pip install --system playwright \
     && playwright install-deps
 
-# Optionally install Chromium
 RUN if [ "$INCLUDE_CHROMIUM" = "true" ]; then \
         playwright install chromium; \
     else \
         echo "Skipping Chromium installation in dev mode"; \
     fi
 
-# Install GeckoDriver WebDriver and Firefox (if required)
-ARG GECKODRIVER_VERSION=v0.34.0
-ARG FIREFOX_VERSION=125.0.3
-RUN --mount=type=bind,source=./docker,target=/docker \
-    if [ "$INCLUDE_FIREFOX" = "true" ]; then \
-        /docker/apt-install.sh wget bzip2 \
+# Install GeckoDriver WebDriver
+ARG GECKODRIVER_VERSION=v0.34.0 \
+    FIREFOX_VERSION=125.0.3
+
+RUN if [ "$INCLUDE_FIREFOX" = "true" ]; then \
+        apt-get update -qq \
+        && apt-get install -yqq --no-install-recommends wget bzip2 \
         && wget -q https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz -O - | tar xfz - -C /usr/local/bin \
         && wget -q https://download-installer.cdn.mozilla.net/pub/firefox/releases/${FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${FIREFOX_VERSION}.tar.bz2 -O - | tar xfj - -C /opt \
         && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
@@ -231,6 +251,11 @@ RUN apt-get update && \
     wget \
     unzip \
     libaio1 \
+    && rm -rf /var/lib/apt/lists/* \
+
+# Installing mysql client os-level dependencies in dev image only because GPL
+RUN apt-get install -yqq --no-install-recommends \
+        default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install oracledb --upgrade
@@ -255,7 +280,6 @@ RUN --mount=type=bind,source=./docker,target=/docker \
     /docker/pip-install.sh --requires-build-essential -r requirements/development.txt
 
 USER superset
-
 ######################################################################
 # CI image...
 ######################################################################
