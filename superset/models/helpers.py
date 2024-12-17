@@ -1842,9 +1842,9 @@ class ExploreMixin:  # pylint: disable=too-many-public-methods
                 elif op == utils.FilterOperator.IS_NOT_NULL.value:
                     where_clause_and.append(sqla_col.isnot(None))
                 elif op == utils.FilterOperator.IS_TRUE.value:
-                    where_clause_and.append(sqla_col.is_(True))
+                    where_clause_and.append(sqla_col == True)
                 elif op == utils.FilterOperator.IS_FALSE.value:
-                    where_clause_and.append(sqla_col.is_(False))
+                    where_clause_and.append(sqla_col == False)
                 else:
                     if (
                         op
