@@ -31,6 +31,7 @@
     >
   {% endfor %}
   {{ css_bundle("theme") }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/cognome_custom_styles.css') }}">
 {% endblock %}
 
 {% block head_js %}
@@ -45,3 +46,6 @@
   {{ js_bundle('menu') }}
   {% include "tail_js_custom_extra.html" %}
 {% endblock %}
+
+
+{}
