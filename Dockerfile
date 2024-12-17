@@ -38,6 +38,8 @@ ARG DEV_MODE="false"
 ARG INCLUDE_CHROMIUM="true"
 ARG INCLUDE_FIREFOX="false"
 
+ARG DEPLOYMENT_MODE="local"
+
 # Somehow we need python3 + build-essential on this side of the house to install node-gyp
 RUN apt-get update -qq \
     && apt-get install \
@@ -55,10 +57,19 @@ RUN --mount=type=bind,target=/frontend-mem-nag.sh,src=./docker/frontend-mem-nag.
 
 WORKDIR /app/superset-frontend
 # Creating empty folders to avoid errors when running COPY later on
+RUN if [ "$DEPLOYMENT_MODE" = "local" ]; then \
+  npm config set ca ""; \
+  npm config set strict-ssl false -g; \
+  npm config set strict-ssl false; \
+fi
+
 RUN mkdir -p /app/superset/static/assets
 RUN --mount=type=bind,target=./package.json,src=./superset-frontend/package.json \
     --mount=type=bind,target=./package-lock.json,src=./superset-frontend/package-lock.json \
-    if [ "$DEV_MODE" = "false" ]; then \
+    if [ "$DEV_MODE" = "false" ] && [ "$DEPLOYMENT_MODE" = "local" ]; then \
+       npm config set ca ""; \
+        npm config set strict-ssl false -g; \
+        npm config set strict-ssl false; \
         npm ci; \
     else \
         echo "Skipping 'npm ci' in dev mode"; \
