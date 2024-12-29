@@ -56,6 +56,7 @@ services:
     restart: unless-stopped
     ports:
       - 8088:8088
+      - 5879:5679
     depends_on: *superset-depends-on
     volumes: *superset-volumes
 
@@ -70,6 +71,10 @@ services:
       - path: docker/.env-local # optional override
         required: false
     depends_on: *superset-depends-on
+    ports:
+      - 5778:5678
+      - 5779:5679
+      - 5780:5680
     user: "root"
     volumes: *superset-volumes
     healthcheck:
