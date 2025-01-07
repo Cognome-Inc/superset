@@ -349,15 +349,19 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
     )
 
     MONTEFIORE_READ_ONLY_PERMISSIONS = {
-        ("can_read", "Dashboard"),
-        ("can_read", "Chart"),
+        ("all_database_access", "all_database_access"),
         ("menu_access", "Dashboards"),
         ("menu_access", "Charts"),
+        ("menu_access", "Test Dashboard Submenu"),
     }
     
     MONTEFIORE_READ_ONLY_PERMISSION_VIEWS = {
+        ("can_explore_json", "Superset"),
+        ("can_dashboard", "Superset"),
         ("can_read", "Dashboard"),
         ("can_read", "Chart"),
+        ("can_read", "Dataset"),
+        ("can_read", "Database"),
     }
 
     guest_user_cls = GuestUser
@@ -1304,7 +1308,7 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
         :param pvm: The FAB permission/view
         :returns: Whether the FAB object is SQL Lab related
         """
-        return (pvm.permission.name, pvm.view_menu.name) in self.SQLLAB_ONLY_PERMISSIONS
+        return (pvm.permission.name, pvm.view_menu.name) in self.MONTEFIORE_READ_ONLY_PERMISSIONS
 
     def _is_sql_lab_pvm(self, pvm: PermissionView) -> bool:
         """
