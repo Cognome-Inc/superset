@@ -95,7 +95,7 @@ WEBDRIVER_BASEURL = "http://superset:8088/"  # When using docker compose baseurl
 WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 SQLLAB_CTAS_NO_LIMIT = True
 
-APP_ICON = os.getenv("APP_ICON", "/static/assets/images/cognome-logo-horiz.png")
+APP_ICON = os.getenv("APP_ICON", "/static/assets/images/Montefiore.svg")
 LOGO_TARGET_PATH = "/dashboard/list"
 #
 # Optionally import superset_config_docker.py (which will have been included on
