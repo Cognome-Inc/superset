@@ -22,6 +22,8 @@ set -e
 #
 /app/docker/docker-bootstrap.sh
 
+export PYTHONHTTPSVERIFY=0
+
 if [ "$SUPERSET_LOAD_EXAMPLES" = "yes" ]; then
     STEP_CNT=4
 else

@@ -25,6 +25,15 @@ import os
 
 from celery.schedules import crontab
 from flask_caching.backends.filesystemcache import FileSystemCache
+from flask_appbuilder import AppBuilder
+from flask_appbuilder import expose
+from flask import Markup
+
+import sys
+import oracledb
+oracledb.version = "8.3.0"
+sys.modules["cx_Oracle"] = oracledb
+import cx_Oracle
 
 logger = logging.getLogger()
 
@@ -42,8 +51,17 @@ EXAMPLES_PORT = os.getenv("EXAMPLES_PORT")
 EXAMPLES_DB = os.getenv("EXAMPLES_DB")
 
 # The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = os.getenv("SUPERSET__SQLALCHEMY_DATABASE_URI")
-SQLALCHEMY_EXAMPLES_URI = os.getenv("SQLALCHEMY_EXAMPLES_URI")
+SQLALCHEMY_DATABASE_URI = (
+    f"{DATABASE_DIALECT}://"
+    f"{DATABASE_USER}:{DATABASE_PASSWORD}@"
+    f"{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_DB}"
+)
+
+SQLALCHEMY_EXAMPLES_URI = (
+    f"{DATABASE_DIALECT}://"
+    f"{EXAMPLES_USER}:{EXAMPLES_PASSWORD}@"
+    f"{EXAMPLES_HOST}:{EXAMPLES_PORT}/{EXAMPLES_DB}"
+)
 
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
@@ -111,30 +129,37 @@ try:
 except ImportError:
     logger.info("Using default Docker config...")
 
+#SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://superset:superset@db:5432/superset?sslmode=disable"
 
 
-from flask import redirect, g, request
-
-from flask_appbuilder import expose, IndexView
-
-from superset.extensions import (
-    appbuilder,
-)
-
-from superset.utils.core import (
-    get_user_id,
-)
-
-from superset.superset_typing import FlaskResponse
-
-class SupersetIndexView(IndexView):
-    @expose("/")
-    def index(self) -> FlaskResponse:
-        if not g.user or not get_user_id():
-            # Do steps for anonymous user e.g.
-            return redirect("/login")
-        # Do steps for authenticated user e.g.
-        return redirect("/dashboard/list")
+THEME_OVERRIDES = {
+    #ENSURE SINGLE QUOTES for values of the properties
+    "colors": {
+        "primary": {
+            "base": '#320E3B',
+        },
+        "tertiary":{
+            "base":  '#6C1F80',
+        },
+        "grayscale": {
+            "base": '#6C1F80',
+        }
+    },
+    "borderRadius": 20,  # Override border radius for UI elements
+    "spacing": {
+        "padding": "10px",  # Adjust default padding
+    },
+}
 
 
-FAB_INDEX_VIEW = f"{SupersetIndexView.__module__}.{SupersetIndexView.__name__}"
+
+EXTRA_CATEGORICAL_COLOR_SCHEMES = [
+    {
+        "id": "cognomeColorScheme",           # A unique identifier for the color scheme
+        "description": "Cognome Color Scheme",  # Optional: Description for the color scheme
+        "label": "Cognome Color Scheme", # Label that appears in the UI
+        "colors": [                         # List of colors in HEX format
+            "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF" #FOR TEST, not real values
+        ],
+    }
+]
