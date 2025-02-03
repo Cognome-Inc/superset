@@ -239,36 +239,6 @@ RUN if [ "$INCLUDE_FIREFOX" = "true" ]; then \
         echo "Skipping Firefox installation in dev mode"; \
     fi
 
-# Install Oracle client
-# Set environment variables
-ENV ORACLE_HOME=/opt/oracle/instantclient_23_6
-ENV LD_LIBRARY_PATH=$ORACLE_HOME:$LD_LIBRARY_PATH
-ENV PATH=$ORACLE_HOME:$PATH
-
-# Install dependencies
-RUN apt-get update && \
-    apt-get install -y \
-    wget \
-    unzip \
-    libaio1 \
-    && rm -rf /var/lib/apt/lists/* \
-
-# Installing mysql client os-level dependencies in dev image only because GPL
-RUN apt-get install -yqq --no-install-recommends \
-        default-libmysqlclient-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip install oracledb --upgrade
-RUN pip install cx_oracle --upgrade
-
-COPY instantclient-basic-linux.x64-23.6.0.24.10.zip /tmp/instantclient.zip
-RUN unzip /tmp/instantclient.zip -d /opt/oracle && \
-rm /tmp/instantclient.zip
-RUN ls -l /opt/oracle
-RUN chmod -R 755 /opt/oracle/instantclient_23_6
-RUN echo "/opt/oracle/instantclient_23_6" > /etc/ld.so.conf.d/oracle-instantclient.conf && \
-    ldconfig
-
 # Install MySQL client dependencies
 RUN --mount=type=bind,source=./docker,target=/docker \
     /docker/apt-install.sh default-libmysqlclient-dev

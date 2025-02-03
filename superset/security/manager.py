@@ -348,6 +348,22 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
         "all_query_access",
     )
 
+    MONTEFIORE_READ_ONLY_PERMISSIONS = {
+        ("all_database_access", "all_database_access"),
+        ("menu_access", "Dashboards"),
+        ("menu_access", "Charts"),
+        ("menu_access", "Test Dashboard Submenu"),
+    }
+    
+    MONTEFIORE_READ_ONLY_PERMISSION_VIEWS = {
+        ("can_explore_json", "Superset"),
+        ("can_dashboard", "Superset"),
+        ("can_read", "Dashboard"),
+        ("can_read", "Chart"),
+        ("can_read", "Dataset"),
+        ("can_read", "Database"),
+    }
+
     guest_user_cls = GuestUser
     pyjwt_for_guest_token = _jwt_global_obj
 
@@ -1061,6 +1077,7 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
         self.set_role("Alpha", self._is_alpha_pvm, pvms)
         self.set_role("Gamma", self._is_gamma_pvm, pvms)
         self.set_role("sql_lab", self._is_sql_lab_pvm, pvms)
+        self.set_role("Montefiore_ReadOnly", self._is_montefiore_readonly_pvm, pvms)
 
         # Configure public role
         if current_app.config["PUBLIC_ROLE_LIKE"]:
@@ -1268,6 +1285,30 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
         :returns: Whether the FAB object is SQL Lab related
         """
         return (pvm.permission.name, pvm.view_menu.name) in self.SQLLAB_ONLY_PERMISSIONS
+
+    def _is_montefiore_readonly_pvm(self, pvm: PermissionView) -> bool:
+        """
+        Return True if the FAB permission/view is SQL Lab related, False
+        otherwise.
+
+        :param pvm: The FAB permission/view
+        :returns: Whether the FAB object is SQL Lab related
+        """
+        return (
+            self._is_montefiore_readonly_only(pvm)
+            or (pvm.permission.name, pvm.view_menu.name)
+            in self.MONTEFIORE_READ_ONLY_PERMISSION_VIEWS
+        )
+
+    def _is_montefiore_readonly_only(self, pvm: PermissionView) -> bool:
+        """
+        Return True if the FAB permission/view is only SQL Lab related, False
+        otherwise.
+
+        :param pvm: The FAB permission/view
+        :returns: Whether the FAB object is SQL Lab related
+        """
+        return (pvm.permission.name, pvm.view_menu.name) in self.MONTEFIORE_READ_ONLY_PERMISSIONS
 
     def _is_sql_lab_pvm(self, pvm: PermissionView) -> bool:
         """
