@@ -30,11 +30,6 @@ from flask_appbuilder import expose
 from flask import Markup
 
 import sys
-import oracledb
-oracledb.version = "8.3.0"
-sys.modules["cx_Oracle"] = oracledb
-import cx_Oracle
-
 logger = logging.getLogger()
 
 DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
@@ -51,17 +46,9 @@ EXAMPLES_PORT = os.getenv("EXAMPLES_PORT")
 EXAMPLES_DB = os.getenv("EXAMPLES_DB")
 
 # The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = (
-    f"{DATABASE_DIALECT}://"
-    f"{DATABASE_USER}:{DATABASE_PASSWORD}@"
-    f"{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_DB}"
-)
+SQLALCHEMY_DATABASE_URI = os.getenv("SUPERSET__SQLALCHEMY_DATABASE_URI")
+SQLALCHEMY_EXAMPLES_URI = os.getenv("SQLALCHEMY_EXAMPLES_URI")
 
-SQLALCHEMY_EXAMPLES_URI = (
-    f"{DATABASE_DIALECT}://"
-    f"{EXAMPLES_USER}:{EXAMPLES_PASSWORD}@"
-    f"{EXAMPLES_HOST}:{EXAMPLES_PORT}/{EXAMPLES_DB}"
-)
 
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")

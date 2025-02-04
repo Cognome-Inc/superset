@@ -51,7 +51,8 @@ RUN apt-get update -qq \
         zstd
 
 ENV BUILD_CMD=${NPM_BUILD_CMD} \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    NODE_TLS_REJECT_UNAUTHORIZED=0
 # NPM ci first, as to NOT invalidate previous steps except for when package.json changes
 
 # Run the frontend memory monitoring script
@@ -63,7 +64,7 @@ WORKDIR /app/superset-frontend
 
 # Create necessary folders to avoid errors in subsequent steps
 RUN mkdir -p /app/superset/static/assets \
-             /app/superset/translations \
+             /app/superset/translations
 
 # Creating empty folders to avoid errors when running COPY later on
 RUN if [ "$DEPLOYMENT_MODE" = "local" ]; then \
@@ -76,7 +77,7 @@ fi
 RUN --mount=type=bind,target=./package.json,src=./superset-frontend/package.json \
     --mount=type=bind,target=./package-lock.json,src=./superset-frontend/package-lock.json \
     if [ "$DEV_MODE" = "false" ] && [ "$DEPLOYMENT_MODE" = "local" ]; then \
-       npm config set ca ""; \
+        npm config set ca ""; \
         npm config set strict-ssl false -g; \
         npm config set strict-ssl false; \
         npm ci; \

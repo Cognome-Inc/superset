@@ -27,6 +27,7 @@ x-superset-volumes:
   &superset-volumes # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
   - ./docker:/app/docker
   - superset_home:/app/superset_home
+  - ./superset/static/assets/cognome_custom_styles.css:/app/superset/static/assets/cognome_custom_styles.css
 
 x-common-build: &common-build
   context: .
@@ -43,6 +44,9 @@ services:
       - redis:/data
 
   superset:
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - CYPRESS_CONFIG=false
     env_file:
       - path: docker/.env # default
         required: true
@@ -60,6 +64,10 @@ services:
     volumes: *superset-volumes
 
   superset-init:
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - PYTHONHTTPSVERIFY=0
+      - CYPRESS_CONFIG=false
     container_name: superset_init
     build:
       <<: *common-build
@@ -76,6 +84,9 @@ services:
       disable: true
 
   superset-worker:
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - CYPRESS_CONFIG=false
     build:
       <<: *common-build
     container_name: superset_worker
@@ -97,6 +108,9 @@ services:
         ]
 
   superset-worker-beat:
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - CYPRESS_CONFIG=false
     build:
       <<: *common-build
     container_name: superset_worker_beat
