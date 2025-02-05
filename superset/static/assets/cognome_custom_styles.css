@@ -31,8 +31,15 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-horizontal {
     background-color: #320E3B !important;
     color: white !important;
 }
-.ant-menu-item.ant-menu-item-only-child a {
+
+
+.ant-menu.ant-menu-sub.ant-menu-vertical  {
     color: #FFFFFF;
+    background-color: #320E3B !important;
+}
+
+.ant-menu.ant-menu-sub.ant-menu-vertical:hover {
+    color: #320E3B;
 }
 
 .ant-menu-item.ant-menu-item-only-child.ant-menu-item-selected a {
