@@ -126,9 +126,11 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             category="",
             category_icon="",
         )
+        logger.info('*** Dashboard Title ***')
         base_filter_orig = DashboardDAO.base_filter
         DashboardDAO.base_filter = None
         for dashboard in DashboardDAO.find_all_by_update_date():
+            logger.info(dashboard.dashboard_title)
             appbuilder.add_link(
                 "Test Dashboard Submenu",
                 label=__(dashboard.dashboard_title),
@@ -226,6 +228,12 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         from superset.views.tags import TagModelView, TagView
         from superset.views.users.api import CurrentUserRestApi, UserRestApi
 
+#        import debugpy
+
+#        logger.info("Waiting for client to attach (__init__.py)...")
+#        debugpy.listen(("0.0.0.0", 5679))
+#        debugpy.wait_for_client()
+
         set_app_error_handlers(self.superset_app)
 
         #
@@ -283,7 +291,11 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         #
         # Add Dashboards menu
         #
-        self.add_dashboards_menu()
+        try:
+            self.add_dashboards_menu()
+        except RuntimeError as error:
+            print("Failed to create submenu for the 'Dashboard' menu")
+            print(error)
 
         appbuilder.add_view(
             SliceModelView,

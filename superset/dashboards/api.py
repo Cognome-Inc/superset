@@ -1441,6 +1441,16 @@ class DashboardRestApi(BaseSupersetModelRestApi):
             500:
               $ref: '#/components/responses/500'
         """
+#        if not hasattr(self, 'debug_initialized') or self.debug_initialized is None:
+#            self.debug_initialized = True
+#            import logging
+#            import debugpy
+
+#            logger = logging.getLogger(__name__)
+#            logger.info("Waiting for client to attach (__init__.py)...")
+#            debugpy.listen(("0.0.0.0", 5679))
+#            debugpy.wait_for_client()
+        
         upload = request.files.get("formData")
         if not upload:
             return self.response_400()

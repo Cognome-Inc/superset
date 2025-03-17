@@ -260,7 +260,14 @@ def menu_data(user: User) -> dict[str, Any]:
 
     if callable(brand_text := appbuilder.app.config["LOGO_RIGHT_TEXT"]):
         brand_text = brand_text()
-        
+    
+    logger.info('*** appbuilder.menu ***')
+    logger.info(appbuilder.menu)
+
+    logger.info('*** appbuilder.menu.get_data() ***')
+    if not appbuilder.menu is None:
+        logger.info(appbuilder.menu.get_data())
+
     return {
         "menu": appbuilder.menu.get_data(),
         "brand": {
@@ -344,6 +351,8 @@ def cached_common_bootstrap_data(  # pylint: disable=unused-argument
         "theme_overrides": conf["THEME_OVERRIDES"],
         "menu_data": menu_data(g.user),
     }
+    logger.info('*** bootstrap_data ***')
+    logger.info(bootstrap_data)
     bootstrap_data.update(conf["COMMON_BOOTSTRAP_OVERRIDES_FUNC"](bootstrap_data))
     return bootstrap_data
 

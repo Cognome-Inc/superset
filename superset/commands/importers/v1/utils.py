@@ -107,6 +107,12 @@ def load_configs(
 ) -> dict[str, Any]:
     configs: dict[str, Any] = {}
 
+#    import debugpy
+
+#    logger.info("Waiting for client to attach (__init__.py)...")
+#    debugpy.listen(("0.0.0.0", 5679))
+#    debugpy.wait_for_client()
+
     # load existing databases so we can apply the password validation
     db_passwords: dict[str, str] = {
         str(uuid): password

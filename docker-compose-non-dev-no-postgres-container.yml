@@ -60,6 +60,7 @@ services:
     restart: unless-stopped
     ports:
       - 8088:8088
+      - 5779:5679
     depends_on: *superset-depends-on
     volumes: *superset-volumes
 

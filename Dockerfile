@@ -217,7 +217,9 @@ RUN --mount=type=bind,source=./docker,target=/docker \
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     uv pip install --system playwright \
-    && playwright install-deps
+    && playwright install-deps \
+    && pip install debugpy
+
 
 RUN if [ "$INCLUDE_CHROMIUM" = "true" ]; then \
         playwright install chromium; \
