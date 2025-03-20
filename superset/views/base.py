@@ -266,7 +266,18 @@ def menu_data(user: User) -> dict[str, Any]:
 
     logger.info('*** appbuilder.menu.get_data() ***')
     if not appbuilder.menu is None:
-        logger.info(appbuilder.menu.get_data())
+        try:
+            menu_item = appbuilder.menu.find("Dashboards")
+            if not menu_item is None:
+                logger.info('menu_item.childs')
+                logger.info(menu_item.childs)
+            else:
+                logger.info('menu_item is null')
+            logger.info('appbuilder.menu.get_data()')
+            logger.info(appbuilder.menu.get_data())
+        except RuntimeError as error:
+            print("Failed to call appbuilder.menu.get_data()")
+            print(error)
 
     return {
         "menu": appbuilder.menu.get_data(),
