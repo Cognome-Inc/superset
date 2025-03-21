@@ -126,11 +126,13 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             category="",
             category_icon="",
         )
+        logger.debug('*** Loading Dashboard Title ***')
         base_filter_orig = DashboardDAO.base_filter
         DashboardDAO.base_filter = None
         for dashboard in DashboardDAO.find_all_by_update_date():
-            appbuilder.add_link(
-                "Test Dashboard Submenu",
+            logger.debug(dashboard.dashboard_title)
+            appbuilder.menu.add_link(
+                dashboard.dashboard_title,
                 label=__(dashboard.dashboard_title),
                 href=dashboard.url,
                 icon="fa-flask",
@@ -140,14 +142,26 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         DashboardDAO.base_filter = base_filter_orig
         appbuilder.add_separator("Dashboards")
         appbuilder.add_link(
-            "Test Dashboard Submenu",
-            label=__("Show All"),
+            "Show All",
             href="/dashboard/list",
-            icon="fa-flask",
             category="Dashboards",
-            category_label=__("Dashboards"),
         )
 
+    def print_dashboards_menu(self, title):
+        from flask_login import current_user
+
+        logger.debug('*** {title} ***'.format(title = title))
+        logger.debug('*** showing appbuilder.menu ***')
+        logger.debug(appbuilder.menu)
+
+        logger.debug('*** showing appbuilder.menu.childs ***')
+        if not appbuilder.menu is None:
+            menu_item = appbuilder.menu.find("Dashboards")
+            if not menu_item is None:
+                logger.debug('--- menu_item.childs ---')
+                logger.debug(menu_item.childs)
+            else:
+                logger.debug('--- menu_item is null ---')
 
     def init_views(self) -> None:
         #
@@ -283,7 +297,13 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         #
         # Add Dashboards menu
         #
-        self.add_dashboards_menu()
+        try:
+            self.add_dashboards_menu()
+        except RuntimeError as error:
+            logger.warning("--- Failed to create submenu for the 'Dashboard' menu ---")
+            logger.warning(error)
+        finally:
+            self.print_dashboards_menu('After calling add_dashboards_menu')
 
         appbuilder.add_view(
             SliceModelView,
@@ -302,7 +322,7 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             category="",
             category_icon="",
         )
-        
+        self.print_dashboards_menu('Before setup view with no menu')
         #
         # Setup views with no menu
         #
@@ -333,6 +353,7 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         #
         # Add links
         #
+        self.print_dashboards_menu('Before add links')
         appbuilder.add_api(LogRestApi)
         appbuilder.add_view(
             LogModelView,
@@ -381,7 +402,7 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             category_label=__("Security"),
             icon="fa-lock",
         )
-
+        self.print_dashboards_menu('After add links')
     def init_app_in_ctx(self) -> None:
         """
         Runs init logic in the context of the app

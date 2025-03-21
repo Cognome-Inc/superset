@@ -260,7 +260,25 @@ def menu_data(user: User) -> dict[str, Any]:
 
     if callable(brand_text := appbuilder.app.config["LOGO_RIGHT_TEXT"]):
         brand_text = brand_text()
-        
+
+    logger.debug('*** showing appbuilder.menu ***')
+    logger.debug(appbuilder.menu)
+
+    logger.debug('*** showing appbuilder.menu.get_data() ***')
+    if not appbuilder.menu is None:
+        try:
+            menu_item = appbuilder.menu.find("Dashboards")
+            if not menu_item is None:
+                logger.debug('--- menu_item.childs ---')
+                logger.debug(menu_item.childs)
+            else:
+                logger.debug('--- menu_item is null ---')
+            logger.debug('*** showing appbuilder.menu.get_data() ***')
+            logger.debug(appbuilder.menu.get_data())
+        except RuntimeError as error:
+            logger.warning("Failed to call appbuilder.menu.get_data()")
+            logger.warning(error)
+
     return {
         "menu": appbuilder.menu.get_data(),
         "brand": {
@@ -344,6 +362,8 @@ def cached_common_bootstrap_data(  # pylint: disable=unused-argument
         "theme_overrides": conf["THEME_OVERRIDES"],
         "menu_data": menu_data(g.user),
     }
+    logger.debug('*** showing bootstrap_data ***')
+    logger.debug(bootstrap_data)
     bootstrap_data.update(conf["COMMON_BOOTSTRAP_OVERRIDES_FUNC"](bootstrap_data))
     return bootstrap_data
 
