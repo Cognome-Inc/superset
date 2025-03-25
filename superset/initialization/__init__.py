@@ -299,9 +299,9 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         #
         try:
             self.add_dashboards_menu()
-        except RuntimeError as error:
-            logger.warning("--- Failed to create submenu for the 'Dashboard' menu ---")
-            logger.warning(error)
+        except Exception as error:
+            print("--- Failed to create submenu for the 'Dashboard' menu ---")
+            print(error)
         finally:
             self.print_dashboards_menu('After calling add_dashboards_menu')
 
