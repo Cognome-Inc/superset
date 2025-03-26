@@ -148,3 +148,22 @@ ul#sub2_Data\$Menu {
 .ant-collapse-content-box > * > .ant-row.menu {
     transform: translateX(10px);
 }
+.header-with-actions {
+    background-color: #320E3B !important;
+      color: #FFFFFF !important;
+}
+
+.ant-tabs-nav-wrap {
+    background-color: #320E3B !important;
+    color: #FFFFFF !important;
+}
+
+.open{
+    background-color: #320E3B !important;
+    color: #FFFFFF !important;
+}
+
+.dashboard-content{
+    background-color: #E9DBED !important;
+    color: #FFFFFF !important;
+}
