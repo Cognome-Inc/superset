@@ -8,9 +8,10 @@
 }
 
 .ant-btn:hover{
-    background-color: #6C1F80 !important;
+    background-color: rgb(165, 218, 233);
+    border-color: rgb(121, 202, 222);
+    opacity: 1;
 }
-
 button.ant-btn.superset-button.superset-button-tertiary {
     border: none;
 }
@@ -105,9 +106,11 @@ ul#\33 \$Menu {
 
 .ant-collapse-item.ant-collapse-item-active > .ant-collapse-content > .ant-collapse-content-box > * > div[role="navigation"].ant-row.menu {
     background-color: #320E3B;
+    color: white;
 }
 .ant-collapse-item.ant-collapse-item-active > .ant-collapse-content > .ant-collapse-content-box > *  > * > div[role="navigation"].ant-row.menu {
     background-color: #320E3B;
+    color: white;
 }
 
 .ant-menu-submenu.ant-menu-submenu-horizontal > .ant-menu-submenu-title > span:last-of-type {
@@ -166,4 +169,29 @@ ul#sub2_Data\$Menu {
 .dashboard-content{
     background-color: #E9DBED !important;
     color: #FFFFFF !important;
+}
+
+.ant-col-md-16{
+    background-color: #6C1F80 !important;
+}
+
+button.ant-btn{
+    background-color: #F0F0F0 !important;
+    color: #6C1F80 !important;
+}
+
+button.ant-btn:not([disabled]):hover{
+    color: #6C1F80 !important;
+    background-color: rgb(165, 218, 233) !important;
+    border-color: rgb(121, 202, 222) !important;
+    opacity: 1;
+}
+
+.ant-menu-horizontal > .ant-menu-item:has(> .is-active) {
+    color: inherit;
+    border-bottom-color: rgb(50, 14, 59);
+}
+
+.ant-menu-horizontal > .ant-menu-item:has(> .is-active) > a {
+    color: white !important;
 }
