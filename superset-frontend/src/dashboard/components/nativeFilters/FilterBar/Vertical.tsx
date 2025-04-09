@@ -215,10 +215,12 @@ const VerticalFilterBar: FC<VerticalBarProps> = ({
           <StyledCollapseIcon
             {...getFilterBarTestId('expand-button')}
             iconSize="l"
+            className="cognome-custom-collapse-icon"
           />
           <StyledFilterIcon
             {...getFilterBarTestId('filter-icon')}
             iconSize="l"
+            className="cognome-custom-filter-icon"
           />
         </CollapsedBar>
         <Bar className={cx({ open: filtersOpen })} width={width}>

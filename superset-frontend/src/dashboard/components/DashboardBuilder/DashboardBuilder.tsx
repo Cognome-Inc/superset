@@ -83,7 +83,7 @@ import { useNativeFilters } from './state';
 import DashboardWrapper from './DashboardWrapper';
 
 // @z-index-above-dashboard-charts + 1 = 11
-const FiltersPanel = styled.div<{ width: number; hidden: boolean }>`
+const FiltersPanel = styled.div<{ width: number; hidden: boolean; className: string }>`
   grid-column: 1;
   grid-row: 1 / span 2;
   z-index: 11;
@@ -593,6 +593,7 @@ const DashboardBuilder = () => {
           width={filterBarWidth}
           hidden={isReport}
           data-test="dashboard-filters-panel"
+          className="cognome-custom-filter-panel"
         >
           <StickyPanel ref={containerRef} width={filterBarWidth}>
             <ErrorBoundary>

@@ -195,3 +195,33 @@ button.ant-btn:not([disabled]):hover{
 .ant-menu-horizontal > .ant-menu-item:has(> .is-active) > a {
     color: white !important;
 }
+
+.cognome-custom-filter-panel {
+  background-color: #6C1F80 !important;
+}
+
+.cognome-custom-filter-icon {
+  background-color: white;
+  opacity: 1;
+  border-radius: 20px !important;
+}
+
+.cognome-custom-filter-icon:hover {
+  background-color: rgb(165, 218, 233) !important;
+  border-color: rgb(121, 202, 222) !important;
+  opacity: 1;
+  border-radius: 20px !important;
+}
+
+.cognome-custom-collapse-icon {
+  background-color: white;
+  opacity: 1;
+  border-radius: 20px !important;
+}
+
+.cognome-custom-collapse-icon:hover {
+  background-color: rgb(165, 218, 233) !important;
+  border-color: rgb(121, 202, 222) !important;
+  opacity: 1;
+  border-radius: 20px !important;
+}
