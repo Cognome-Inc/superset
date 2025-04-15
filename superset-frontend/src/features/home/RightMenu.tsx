@@ -58,13 +58,6 @@ import {
 
 const extensionsRegistry = getExtensionsRegistry();
 
-const versionInfoStyles = (theme: SupersetTheme) => css`
-  padding: ${theme.gridUnit * 1.5}px ${theme.gridUnit * 4}px
-    ${theme.gridUnit * 4}px ${theme.gridUnit * 7}px;
-  color: ${theme.colors.grayscale.base};
-  font-size: ${theme.typography.sizes.xs}px;
-  white-space: nowrap;
-`;
 const StyledI = styled.div`
   color: ${({ theme }) => theme.colors.primary.dark1};
 `;
@@ -519,33 +512,6 @@ const RightMenu = ({
               <Menu.Item key="logout" onClick={handleLogout}>
                 <a href={navbarRight.user_logout_url}>{t('Logout')}</a>
               </Menu.Item>
-            </Menu.ItemGroup>,
-          ]}
-          {(navbarRight.version_string || navbarRight.version_sha) && [
-            <Menu.Divider key="version-info-divider" />,
-            <Menu.ItemGroup key="about-section" title={t('About')}>
-              <div className="about-section">
-                {navbarRight.show_watermark && (
-                  <div css={versionInfoStyles}>
-                    {t('Powered by Apache Superset')}
-                  </div>
-                )}
-                {navbarRight.version_string && (
-                  <div css={versionInfoStyles}>
-                    {t('Version')}: {navbarRight.version_string}
-                  </div>
-                )}
-                {navbarRight.version_sha && (
-                  <div css={versionInfoStyles}>
-                    {t('SHA')}: {navbarRight.version_sha}
-                  </div>
-                )}
-                {navbarRight.build_number && (
-                  <div css={versionInfoStyles}>
-                    {t('Build')}: {navbarRight.build_number}
-                  </div>
-                )}
-              </div>
             </Menu.ItemGroup>,
           ]}
         </SubMenu>
