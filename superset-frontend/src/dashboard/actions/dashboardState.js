@@ -28,7 +28,7 @@ import {
   t,
   getClientErrorObject,
   getCategoricalSchemeRegistry,
-  promiseTimeout,
+  promiseTimeout, logging,
 } from '@superset-ui/core';
 import {
   addChart,
@@ -161,6 +161,11 @@ export function savePublished(id, isPublished) {
           ),
         );
         dispatch(togglePublished(isPublished));
+        setTimeout(() => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('refresh', Date.now().toString()); // adds ?refresh=timestamp
+          window.location.replace(url.toString());
+        }, 500);
       })
       .catch(() => {
         dispatch(

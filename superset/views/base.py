@@ -226,6 +226,38 @@ class BaseSupersetView(BaseView):
                 payload, default=json.pessimistic_json_iso_dttm_ser
             ),
         )
+    
+def add_dashboards_menu():
+    from superset.daos.dashboard import DashboardDAO
+    from superset.views.dashboard.views import DashboardModelView
+    appbuilder.add_view(
+        DashboardModelView,
+        "Dashboards",
+        label=__("Dashboards"),
+        icon="fa-dashboard",
+        category="",
+        category_icon="",
+    )
+    logger.debug('*** Loading Dashboard Title ***')
+    base_filter_orig = DashboardDAO.base_filter
+    DashboardDAO.base_filter = None
+    for dashboard in DashboardDAO.find_all_by_update_date():
+        logger.debug(dashboard.dashboard_title)
+        appbuilder.menu.add_link(
+            dashboard.dashboard_title,
+            label=__(dashboard.dashboard_title),
+            href=dashboard.url,
+            icon="fa-flask",
+            category="Dashboards",
+            category_label=__("Dashboards"),
+        )
+    DashboardDAO.base_filter = base_filter_orig
+    appbuilder.add_separator("Dashboards")
+    appbuilder.add_link(
+        "Show All",
+        href="/dashboard/list",
+        category="Dashboards",
+    )
 
 
 def get_environment_tag() -> dict[str, Any]:
@@ -261,6 +293,12 @@ def menu_data(user: User) -> dict[str, Any]:
     if callable(brand_text := appbuilder.app.config["LOGO_RIGHT_TEXT"]):
         brand_text = brand_text()
 
+    if appbuilder.menu.find('Dashboards') is not None:
+        appbuilder.menu.menu.remove(appbuilder.menu.find('Dashboards'))
+    
+    add_dashboards_menu()
+    dashboards_menu = appbuilder.menu.menu.pop()
+    appbuilder.menu.menu.insert(3, dashboards_menu)
     logger.debug('*** showing appbuilder.menu ***')
     logger.debug(appbuilder.menu)
 
@@ -316,7 +354,7 @@ def menu_data(user: User) -> dict[str, Any]:
     }
 
 
-@cache_manager.cache.memoize(timeout=60)
+# @cache_manager.cache.memoize(timeout=60)
 def cached_common_bootstrap_data(  # pylint: disable=unused-argument
     user_id: int | None, locale: Locale | None
 ) -> dict[str, Any]:

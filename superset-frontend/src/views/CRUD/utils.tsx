@@ -329,6 +329,11 @@ export function handleDashboardDelete(
       if (dashboardFilter === 'Mine') refreshData(filters);
       else refreshData();
       addSuccessToast(t('Deleted: %s', dashboardTitle));
+      setTimeout(() => {
+        const url = new URL('/dashboard/list/', window.location.origin);
+        url.searchParams.set('refresh', Date.now().toString()); // adds ?refresh=timestamp
+        window.location.replace(url.toString());
+      }, 500);
     },
     createErrorHandler(errMsg =>
       addDangerToast(
