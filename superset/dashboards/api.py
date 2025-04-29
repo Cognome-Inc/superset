@@ -187,6 +187,7 @@ class DashboardRestApi(BaseSupersetModelRestApi):
         "cache_dashboard_screenshot",
         "screenshot",
         "put_filters",
+        "get_menu",
     }
     resource_name = "dashboard"
     allow_browser_login = True
@@ -334,6 +335,31 @@ class DashboardRestApi(BaseSupersetModelRestApi):
             self.appbuilder.app.config["VERSION_STRING"],
             self.appbuilder.app.config["VERSION_SHA"],
         )
+
+    @expose("/menu/", methods=("GET",))
+    @protect()
+    @safe
+    @statsd_metrics
+    @event_logger.log_this_with_context(
+        action=lambda self, *args, **kwargs: f"{self.__class__.__name__}.get_menu",
+        log_to_statsd=False,
+    )
+    # pylint: disable=arguments-differ,arguments-renamed
+    def get_menu(self, **kwargs: Any) -> Response:
+        from superset.daos.dashboard import DashboardDAO
+        from superset.views.dashboard.views import DashboardModelView
+        logger.debug('*** Loading Dashboard Title from Database ***')
+        base_filter_orig = DashboardDAO.base_filter
+        DashboardDAO.base_filter = None
+        dashboard_title_list = []
+        for dashboard in DashboardDAO.find_all_by_update_date():
+            dashboard_title_list.append(dashboard.dashboard_title)
+            logger.debug(dashboard.dashboard_title)
+
+        DashboardDAO.base_filter = base_filter_orig
+        dashboards_menu = ''
+        result = {"dashboard_title_list": dashboard_title_list, "menu_list": dashboards_menu}
+        return self.response(200, result=result)
 
     @expose("/<id_or_slug>", methods=("GET",))
     @protect()

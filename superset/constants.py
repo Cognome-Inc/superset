@@ -124,6 +124,7 @@ MODEL_API_RW_METHOD_PERMISSION_MAP = {
     "delete": "write",
     "distinct": "read",
     "get": "read",
+    "get_menu": "read",
     "get_list": "read",
     "info": "read",
     "post": "write",
